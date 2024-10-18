@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken"); // Import JWT
 const Company = require("../models/company");
 const { sendEmailOtp, sendMobileOtp } = require("../utils/otpUtils");
 
@@ -73,6 +74,34 @@ router.post("/verify-mobile-otp", async (req, res) => {
     company.isMobileVerified = true;
     await company.save();
     res.json({ msg: "Mobile verified successfully" });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server error");
+  }
+});
+
+// Login Company
+router.post("/login", async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    // Check if the company exists
+    const company = await Company.findOne({ email });
+    if (!company) return res.status(400).json({ msg: "Invalid credentials" });
+
+    // Check if the password matches
+    const isMatch = await bcrypt.compare(password, company.password);
+    if (!isMatch) return res.status(400).json({ msg: "Invalid credentials" });
+
+    // Check if email is verified
+    if (!company.isEmailVerified) {
+      return res.status(400).json({ msg: "Please verify your email first" });
+    }
+
+    // Create and assign a token
+    const token = jwt.sign({ id: company._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+    res.json({ token, companyId: company._id });
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Server error");
