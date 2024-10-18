@@ -2,10 +2,15 @@ const express = require("express");
 const connectDB = require("./config/db");
 const app = express();
 require("dotenv").config();
+const cors = require('cors');
 
 // Connect to database
-connectDB();
 
+
+connectDB();
+app.use(cors({
+    origin: '*'  // This allows all origins
+}));
 // Middleware
 app.use(express.json());
 
