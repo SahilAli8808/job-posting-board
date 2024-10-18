@@ -2,11 +2,12 @@ const express = require("express");
 const router = express.Router();
 const Job = require("../models/job");
 const { sendJobEmails } = require("../utils/email");
+const authMiddleware = require("../middleware/authMiddleware"); // Adjust the path as necessary
 
-// Create a new job posting
-router.post("/create-job", async (req, res) => {
+// Apply authentication middleware
+router.post("/create-job", authMiddleware, async (req, res) => {
   const { title, description, experienceLevel, candidatesEmails, endDate } = req.body;
-  const companyId = req.company.id; // Assuming authentication middleware provides this
+  const companyId = req.company._id; // Use _id or id depending on your model
 
   try {
     const job = new Job({
