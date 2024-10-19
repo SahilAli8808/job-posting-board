@@ -1,9 +1,14 @@
-import SignUpPage from './components/SignUpPage'
+import SignUpPage from './components/SignUpPage';
+import { Toaster } from 'react-hot-toast'; // Import Toaster
 import './App.css';
 
 function App() {
-  return <SignUpPage />
+  return (
+    <>
+      <Toaster /> {/* Render Toaster */}
+      <SignUpPage />
+    </>
+  );
 }
 
-
-export default App
+export default App;

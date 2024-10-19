@@ -4,6 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Users, Phone, Building2, Mail } from 'lucide-react';
+import toast from 'react-hot-toast';
+import { MobileIcon } from '@radix-ui/react-icons';
 
 const SignUpPage = () => {
   const [formData, setFormData] = useState({
@@ -14,10 +16,21 @@ const SignUpPage = () => {
     employeeSize: '',
     password: ''
   });
+  
+  const [isRegistered, setIsRegistered] = useState(false);
+  const [otpData, setOtpData] = useState({
+    emailOtp: '',
+    mobileOtp: ''
+  });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+  };
+
+  const handleOtpChange = (e) => {
+    const { name, value } = e.target;
+    setOtpData({ ...otpData, [name]: value });
   };
 
   const handleSubmit = async (e) => {
@@ -32,11 +45,20 @@ const SignUpPage = () => {
         password: formData.password
       });
       console.log('User registered:', response.data);
-      // Handle successful registration (e.g., redirect or show a message)
+      toast.success('User registered successfully');
+      setIsRegistered(true); // Show OTP verification card
     } catch (error) {
       console.error('Error registering user:', error);
+      toast.error('Error registering user');
       // Handle error (e.g., show an error message)
     }
+  };
+
+  const handleVerifyOtp = async (e) => {
+    e.preventDefault();
+    // Handle OTP verification logic here
+    console.log('Verifying OTP:', otpData);
+    // You can send the OTP data to your server for verification
   };
 
   return (
@@ -70,12 +92,14 @@ const SignUpPage = () => {
         </div>
 
         {/* Sign Up Form */}
+        {!isRegistered && (
         <div className="w-[400px] pr-10">
           {/* Card with gradient border */}
           <Card 
             className="rounded-md border bg-transparent"
             style={{
               borderImage: 'linear-gradient(90deg, #3F71FF 0%, #AA54FF 100%) 1',
+      
             }}
           >
             <CardHeader>
@@ -175,6 +199,69 @@ const SignUpPage = () => {
             </CardContent>
           </Card>
         </div>
+        )}
+
+        {/* OTP Verification Card */}
+        {isRegistered && (
+          <div className="w-[400px] pr-10 mt-4">
+            <Card 
+              className="rounded-md border bg-transparent"
+              style={{
+                borderImage: 'linear-gradient(90deg, #3F71FF 0%, #AA54FF 100%) 1',
+              }}
+            >
+              <CardHeader>
+                <CardTitle className="text-2xl font-bold text-center">OTP Verification</CardTitle>
+                <p className="text-sm text-gray-500 text-center">
+                  Lorem Ipsum is simply dummy text
+                </p>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleVerifyOtp} className="space-y-4">
+                  {/* Email OTP Input */}
+                  <div className="space-y-1">
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+                    <Input 
+                      type="text" 
+                      name="emailOtp"
+                      placeholder="Email OTP" 
+                      className="pl-10 mb-8 bg-[#F4F4F4]"
+                      onChange={handleOtpChange}
+                      value={otpData.emailOtp}
+                    />
+                  </div>
+                  </div>
+
+                
+
+                  <Button type="submit" className="w-full bg-[#0B66EF] hover:bg-blue-700">
+                    Verify Email OTP
+                  </Button>
+
+                  {/* Mobile OTP Input */}
+                  <div className="space-y-1">
+                  <div className="relative">
+                  <MobileIcon className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+                    <Input 
+                      type="text" 
+                      name="mobileOtp"
+                      placeholder="Mobile OTP" 
+                      className="bg-[#F4F4F4]"
+                      onChange={handleOtpChange}
+                      value={otpData.mobileOtp}
+                    />
+                  </div>
+                  </div>
+
+                  <Button type="submit" className="w-full bg-[#0B66EF] hover:bg-blue-700">
+                    Verify Mobile OTP
+                  </Button>
+                </form>
+              </CardContent>
+            </Card>
+          </div>
+        )}
       </main>
     </div>
   );
