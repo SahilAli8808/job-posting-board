@@ -4,9 +4,7 @@ const app = express();
 require("dotenv").config();
 const cors = require('cors');
 
-// Connect to database
-
-
+// Connect to databases
 connectDB();
 app.use(cors({
     origin: '*'  // This allows all origins
